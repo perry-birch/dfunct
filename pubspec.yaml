@@ -1,6 +1,6 @@
-name: DFunct
+name: dfunct
 version: 0.0.1
-author: Vizidrix
+author: Vizidrix <admin@vizidrix.com>
 description: A functional library for Dart inspired by Haskell.
 homepage: https://github.com/Vizidrix/defunct
 documentation: https://github.com/Vizidrix/dfunct/tree/master/doc

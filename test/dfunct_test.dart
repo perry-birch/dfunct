@@ -1,7 +1,7 @@
-library functional_test;
+library dfunct_test;
 
 import 'package:unittest/unittest.dart';
-import '../functional.dart';
+import '../lib/dfunct.dart';
 
 part 'src/monad_test.dart';
 part 'src/maybe_test.dart';

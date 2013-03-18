@@ -14,7 +14,7 @@ typedef bool predicate<T>(T value);
 //typedef M<R> fmap<T,R>(map<T,R> map, M<T> monad);
 
 
-
+// TODO: Extract typedefs to a seperate file
 /*
  * createM :: Monad m => () -> m dynamic
  * Creates a dynamic Monad from unit, aka factory

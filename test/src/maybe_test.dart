@@ -1,4 +1,4 @@
-part of functional_test;
+part of dfunct_test;
 
 maybe_tests() {
   group('-maybe- should', () {
