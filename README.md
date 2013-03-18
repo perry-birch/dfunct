@@ -1,5 +1,7 @@
 A functional library for Dart inspired by Haskell
 
+[![Build Status](https://drone.io/github.com/Vizidrix/dfunct/status.png)](https://drone.io/github.com/Vizidrix/dfunct/latest)
+
 Goals:
 - Provide foundational abstractions (Monad, Maybe, ST, etc)
 - Adhere to principles of strong typing wherever possible
