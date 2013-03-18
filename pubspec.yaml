@@ -8,7 +8,3 @@ homepage: https://github.com/Vizidrix/dfunct
 documentation: https://github.com/Vizidrix/dfunct/tree/master/doc
 dependencies:
   unittest: any
-
-#dependencies:
-#  js: any
-#  unittest: any
