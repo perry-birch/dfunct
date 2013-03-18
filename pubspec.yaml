@@ -1,5 +1,9 @@
-name: sample_pubspec
-description: A sample application
+name: DFunct
+version: 0.0.1
+author: Vizidrix
+description: A functional library for Dart inspired by Haskell.
+homepage: https://github.com/Vizidrix/defunct
+documentation: https://github.com/Vizidrix/dfunct/tree/master/doc
 dependencies:
   unittest: any
 
