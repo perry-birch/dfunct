@@ -3,52 +3,46 @@ library maybe;
 
 import 'monad.dart';
 
-abstract class Option<T> {}
-class Just<T> implements Option<T> {
-  final T value;
-  const Just._internal(this.value);
-}
-class Nothing<T> implements Option<T> {
-  const Nothing._internal();
-}
-
 class Maybe<T> implements Monad {
-  final Option<T> state;
-  const Maybe._internal(this.state);
-  factory Maybe(T value) {
-    if(value == null) {
-      return new Maybe._internal(new Nothing._internal());
-    } else {
-      return new Maybe._internal(new Just._internal(value));
-    }
-  }
+  final T _value;
+  const Maybe._internal(this._value);
 
+  /*
+   * Constructs a new Maybe based on the value given.
+   * Will eval as nothing if null is passed.
+   */
+  static final returnM<Maybe> from = (value) {
+    return new Maybe._internal(value);
+  };
   /*
    * Constructs a new Maybe with state Nothing.
    */
   static final createM<Maybe> nothing = () {
-    return new Maybe(null);
+    return from(null);
   };
 
   /*
    * Constructs a new Maybe with state Just(value).
+   * Implies an assertion that the value will not be null.
+   * Throws exception if value is null.
    */
   static final returnM<Maybe> just = (value) {
-    return new Maybe(value);
+    if(value == null) { throw new StateError('Cannot construct ''Maybe.just'' from a null value'); }
+    return from(value);
   };
 
   /*
    * The isJust function returns True if it's argument is Just.
    */
   static final predicateM<Maybe> isJust = (Maybe target) {
-    return target.state is Just;
+    return !isNothing(target);
   };
 
   /*
    * The isNothing function returns True if it's argument is Nothing.
    */
   static final predicateM<Maybe> isNothing = (Maybe target) {
-    return target.state is Nothing;
+    return target._value == null;
   };
 
   /*
@@ -58,8 +52,7 @@ class Maybe<T> implements Monad {
    */
   static final extractorM<Maybe, dynamic> fromJust = (Maybe<dynamic> target) {
     if(isNothing(target)) { throw new StateError('Cannot extract value from Nothing using fromJust'); }
-    Just state = target.state;
-    return state.value;
+    return target._value;
   };
 
   /*

@@ -4,21 +4,7 @@ There are usage examples in the test folder for sections that are fleshed out mo
 
 ** Maybe **
 
-* Option *
-Provides a conceptual model for Just or Nothing through polymorphism
-
-* Just *
-A container which has a value
-* Private ctor can be accessed through Maybe ctor with any non-null value
-* Can also be constructed using Maybe.just(value)
-* - Passing a null to Maybe.just will yield a Nothing
-
-* Nothing *
-An explicit 'null' realized as a type
-* Private ctor can be accessed through Maybe ctor with a null value
-* Can also be constructed using Maybe.nothing()
-
-
+- Maybe.from(value)
 - Maybe.nothing()
 - Maybe.just(value)
 - Maybe.isJust(target)

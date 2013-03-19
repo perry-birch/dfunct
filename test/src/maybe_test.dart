@@ -6,7 +6,7 @@ maybe_tests() {
     test('return true for isJust when there is a value', () {
       // Arrange
       var value = 10;
-      var maybe = new Maybe(value);
+      var maybe = Maybe.from(value);
 
       // Act
       var isJust = Maybe.isJust(maybe);
@@ -18,7 +18,7 @@ maybe_tests() {
     test('return false for isJust when there it is Nothing', () {
       // Arrange
       var value = null;
-      var maybe = new Maybe(value);
+      var maybe = Maybe.from(value);
 
       // Act
       var isJust = Maybe.isJust(maybe);
@@ -30,7 +30,7 @@ maybe_tests() {
     test('return false for isNothing when there is a value', () {
       // Arrange
       var value = 10;
-      var maybe = new Maybe(value);
+      var maybe = Maybe.from(value);
 
       // Act
       var isNothing = Maybe.isNothing(maybe);
@@ -42,7 +42,7 @@ maybe_tests() {
     test('return true for isNothing when there it is Nothing', () {
       // Arrange
       var value = null;
-      var maybe = new Maybe(value);
+      var maybe = Maybe.from(value);
 
       // Act
       var isNothing = Maybe.isNothing(maybe);
@@ -66,7 +66,7 @@ maybe_tests() {
       var value = null;
 
       // Act
-      var maybe = new Maybe(value);
+      var maybe = Maybe.from(value);
 
       // Assert
       expect(Maybe.isNothing(maybe), true);
@@ -77,7 +77,7 @@ maybe_tests() {
       var value = 10;
 
       // Act
-      var maybe = new Maybe(10);
+      var maybe = Maybe.from(10);
 
       // Assert
       expect(Maybe.isJust(maybe), true);
@@ -92,6 +92,22 @@ maybe_tests() {
 
       // Assert
       expect(Maybe.isJust(maybe), true);
+    });
+
+    test('throw StateError exception for passing null to Myabe.just(value)', () {
+      // Arrange
+      var value = null;
+      var caught = false;
+
+      try {
+        // Act
+        Maybe.just(value);
+      } catch (ex) {
+        // Assert
+        expect(ex is StateError, true);
+        caught = true;
+      }
+      expect(caught, true);
     });
 
     test('throw StateError exception for fromJust on a Nothing', () {
@@ -140,8 +156,8 @@ maybe_tests() {
     test('be able to bind function to value of Just', () {
       // Arrange
       var value = 10;
-      var returnM = (item) => new Maybe('item: ${item * 2}');
-      var maybe = new Maybe(value);
+      var returnM = (item) => Maybe.just('item: ${item * 2}');
+      var maybe = Maybe.just(value);
 
       // Act
       var maybe2 = maybe.bind(returnM);
@@ -153,8 +169,8 @@ maybe_tests() {
     test('still be Nothing after bind to Nothing', () {
       // Arrange
       var value = null;
-      var returnM = (item) => new Maybe('item: ${item * 2}');
-      var maybe = new Maybe(value);
+      var returnM = (item) => Maybe.just('item: ${item * 2}');
+      var maybe = Maybe.from(value);
 
       // Act
       var maybe2 = maybe.bind(returnM);
@@ -166,8 +182,8 @@ maybe_tests() {
     test('be nothing if bind operation produces null', () {
       // Arrange
       var value = 10;
-      var returnM = (item) => new Maybe(null);
-      var maybe = new Maybe(value);
+      var returnM = (item) => Maybe.from(null);
+      var maybe = Maybe.just(value);
 
       // Act
       var maybe2 = maybe.bind(returnM);
@@ -179,8 +195,8 @@ maybe_tests() {
     test('associate bind to >> operator', () {
       // Arrange
       var value = 10;
-      var maybe = new Maybe(value);
-      var map = (item) => new Maybe(item * 3);
+      var maybe = Maybe.just(value);
+      var map = (item) => Maybe.just(item * 3);
 
       // Act
       var maybe2 = maybe >> map;
@@ -191,8 +207,7 @@ maybe_tests() {
 
     test('return default value from maybe if target is Nothing', () {
       // Arrange
-      var value = null;
-      var maybe = new Maybe(value);
+      var maybe = Maybe.nothing();
       var map = (item) => item;
 
       // Act
@@ -205,7 +220,7 @@ maybe_tests() {
     test('return value from maybe if target is Just', () {
       // Arrange
       var value = 10;
-      var maybe = new Maybe(value);
+      var maybe = Maybe.just(value);
       var map = (item) => item;
 
       // Act
