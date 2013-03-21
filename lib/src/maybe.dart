@@ -1,11 +1,26 @@
 // http://www.haskell.org/ghc/docs/latest/html/libraries/base/Data-Maybe.html#t:Maybe
 library maybe;
 
+import 'typedefs.dart';
 import 'monad.dart';
 
 class Maybe<T> implements Monad {
   final T _value;
   const Maybe._internal(this._value);
+
+  /*
+   * The bind method takes a returnM (a -> m b) map and calls bindMaybe with this instance
+   */
+  Maybe bind(returnMTR<Maybe, dynamic, dynamic> returnM) {
+    return Maybe.bindMaybe(this, returnM);
+  }
+
+  /*
+   * The >> operator takes a returnM (a -> m b) map and calls bindMaybe with this instance
+   */
+  Monad operator >>(returnMTR returnM) {
+    return bind(returnM);
+  }
 
   /*
    * Constructs a new Maybe based on the value given.
@@ -14,6 +29,7 @@ class Maybe<T> implements Monad {
   static final returnM<Maybe> from = (value) {
     return new Maybe._internal(value);
   };
+
   /*
    * Constructs a new Maybe with state Nothing.
    */
@@ -62,7 +78,7 @@ class Maybe<T> implements Monad {
    */
   static final extractorDefM<Maybe, dynamic> fromMaybe = (dynamic def, Maybe<dynamic> target) {
     if(isNothing(target)) { return def; }
-    return fromJust(target);
+    return target._value;
   };
 
   /*
@@ -71,10 +87,8 @@ class Maybe<T> implements Monad {
    * it applies the function to the value inside the Just and returns the result.
    */
   static final extractorMapDefM<Maybe, dynamic, dynamic> maybe = (dynamic def, map<dynamic, dynamic> map, Maybe<dynamic> target) {
-    if(isNothing(target)) {
-      return def;
-    }
-    return map(fromJust(target));
+    if(isNothing(target)) { return def; }
+    return map(target._value);
   };
 
   /*
@@ -82,8 +96,7 @@ class Maybe<T> implements Monad {
    * the first element of the list.
    */
   static final returnM<Maybe> listToMaybe = (List list) {
-    if(list == null) { return nothing(); }
-    if(list.length == 0) { return nothing(); }
+    if(list == null || list.length == 0) { return nothing(); }
     return just(list[0]);
   };
 
@@ -93,7 +106,7 @@ class Maybe<T> implements Monad {
    */
   static final extractorM<Maybe, List> maybeToList = (Maybe target) {
     if(isNothing(target)) { return new List(); }
-    return [fromJust(target)];
+    return [target._value];
   };
 
   /*
@@ -118,20 +131,6 @@ class Maybe<T> implements Monad {
    */
   static final binderM<Maybe, dynamic, Maybe, dynamic> bindMaybe = (Maybe target, returnMTR<Maybe, dynamic, dynamic> returnM) {
     if(isNothing(target)) { return nothing(); }
-    return returnM(fromJust(target));
+    return returnM(target._value);
   };
-
-  /*
-   * The bind method takes a returnM (a -> m b) map and calls bindMaybe with this instance
-   */
-  Maybe bind(returnMTR<Maybe, dynamic, dynamic> returnM) {
-    return Maybe.bindMaybe(this, returnM);
-  }
-
-  /*
-   * The >> operator takes a returnM (a -> m b) map and calls bindMaybe with this instance
-   */
-  Monad operator >>(returnMTR returnM) {
-    return bind(returnM);
-  }
 }
