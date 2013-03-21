@@ -1,4 +1,8 @@
 
+* 0.0.4 *
+- Refactored Maybe monad (move instance methods and minor changes)
+- Updated pubspec to 'hopefully' fix dependency brittleness
+
 * 0.0.3 *
 - Refactored Maybe monad
 - Was able to remove all references to 'new' while preserving (improving?) the implementation
