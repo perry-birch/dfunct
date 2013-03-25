@@ -1,3 +1,7 @@
+* 0.0.5 *
+- Refactored Maybe monad (added currying to most (all?) multi param calls)
+- Cleaned up and organized typedefs
+- Extended typedefs into _common file
 
 * 0.0.4 *
 - Refactored Maybe monad (move instance methods and minor changes)

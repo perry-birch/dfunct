@@ -3,6 +3,59 @@ part of dfunct_test;
 maybe_tests() {
   group('-maybe- should', () {
 
+    test('call bindMaybe with current instance when bind is called', () {
+      // Arrange
+      var value = 10;
+      var returnM = (item) => Maybe.just('item: ${item * 2}');
+      var maybe = Maybe.just(value);
+
+      // Act
+      var maybe2 = maybe.bind(returnM);
+
+      // Assert
+      expect(Maybe.fromJust(maybe2), 'item: 20');
+    });
+
+    test('call liftMaybe with current instance when lift is called', () {
+      // Arrange
+      var value = 10;
+      var map = (item) => 'item: ${item * 4}';
+      var maybe = Maybe.just(value);
+
+      // Act
+      var maybe2 = maybe.lift(map);
+      var actual = Maybe.fromJust(maybe2);
+
+      // Assert
+      expect(actual, 'item: 40');
+    });
+
+    test('associate bind to >> operator', () {
+      // Arrange
+      var value = 10;
+      var maybe = Maybe.just(value);
+      var map = (item) => Maybe.just(item * 3);
+
+      // Act
+      var maybe2 = maybe >> map;
+
+      // Assert
+      expect(Maybe.fromJust(maybe2), 30);
+    });
+
+    test('associate lift to | operator', () {
+      // Arrange
+      var value = 10;
+      var map = (item) => 'item: ${item * 4}';
+      var maybe = Maybe.just(value);
+
+      // Act
+      var maybe2 = maybe | map;
+
+      // Assert
+      expect(Maybe.fromJust(maybe2), 'item: 40');
+    });
+
     test('return true for isJust when there is a value', () {
       // Arrange
       var value = 10;
@@ -132,9 +185,10 @@ maybe_tests() {
       // Arrange
       var maybe = Maybe.nothing();
       var defaultValue = 5;
+      var fromOrDef = Maybe.fromMaybe(defaultValue);
 
       // Act
-      var actual = Maybe.fromMaybe(defaultValue, maybe);
+      var actual = fromOrDef(maybe);
 
       // Assert
       expect(actual, defaultValue);
@@ -147,62 +201,10 @@ maybe_tests() {
       var defaultValue = 5;
 
       // Act
-      var actual = Maybe.fromMaybe(defaultValue, maybe);
+      var actual = Maybe.fromMaybe(defaultValue)(maybe);
 
       // Assert
       expect(actual, value);
-    });
-
-    test('be able to bind function to value of Just', () {
-      // Arrange
-      var value = 10;
-      var returnM = (item) => Maybe.just('item: ${item * 2}');
-      var maybe = Maybe.just(value);
-
-      // Act
-      var maybe2 = maybe.bind(returnM);
-
-      // Assert
-      expect(Maybe.fromJust(maybe2), 'item: 20');
-    });
-
-    test('still be Nothing after bind to Nothing', () {
-      // Arrange
-      var value = null;
-      var returnM = (item) => Maybe.just('item: ${item * 2}');
-      var maybe = Maybe.from(value);
-
-      // Act
-      var maybe2 = maybe.bind(returnM);
-
-      // Assert
-      expect(Maybe.isNothing(maybe2), true);
-    });
-
-    test('be nothing if bind operation produces null', () {
-      // Arrange
-      var value = 10;
-      var returnM = (item) => Maybe.from(null);
-      var maybe = Maybe.just(value);
-
-      // Act
-      var maybe2 = maybe.bind(returnM);
-
-      // Assert
-      expect(Maybe.isNothing(maybe2), true);
-    });
-
-    test('associate bind to >> operator', () {
-      // Arrange
-      var value = 10;
-      var maybe = Maybe.just(value);
-      var map = (item) => Maybe.just(item * 3);
-
-      // Act
-      var maybe2 = maybe >> map;
-
-      // Assert
-      expect(Maybe.fromJust(maybe2), 30);
     });
 
     test('return default value from maybe if target is Nothing', () {
@@ -211,7 +213,7 @@ maybe_tests() {
       var map = (item) => item;
 
       // Act
-      var actual = Maybe.maybe(5, map, maybe);
+      var actual = Maybe.maybe(5)(map)(maybe);
 
       // Assert
       expect(actual, 5);
@@ -224,7 +226,7 @@ maybe_tests() {
       var map = (item) => item;
 
       // Act
-      var actual = Maybe.maybe(5, map, maybe);
+      var actual = Maybe.maybe(5)(map)(maybe);
 
       // Assert
       expect(actual, 10);
@@ -332,7 +334,7 @@ maybe_tests() {
       };
 
       // Act
-      var actual = Maybe.mapMaybe(returnM, source);
+      var actual = Maybe.mapMaybe(returnM)(source);
 
       // Assert
       expect(actual.length, 0);
@@ -347,7 +349,7 @@ maybe_tests() {
       };
 
       // Act
-      var actual = Maybe.mapMaybe(returnM, source);
+      var actual = Maybe.mapMaybe(returnM)(source);
 
       // Assert
       expect(actual.length, 3);
@@ -355,6 +357,168 @@ maybe_tests() {
       expect(actual.elementAt(1), 'value: 12');
       expect(actual.elementAt(2), 'value: 13');
     });
+
+    test('be ablt to bindMaybe function to just', () {
+      // Arrange
+      var value = 10;
+      var returnM = (item) => Maybe.just('item: ${item * 2}');
+      var maybe = Maybe.just(value);
+
+      // Act
+      var maybe2 = Maybe.bindMaybe(maybe)(returnM);
+
+      // Assert
+      expect(Maybe.fromJust(maybe2), 'item: 20');
+    });
+
+    test('still be Nothing after bindMaybe to Nothing', () {
+      // Arrange
+      var value = null;
+      var returnM = (item) => Maybe.just('item: ${item * 2}');
+      var maybe = Maybe.from(value);
+
+      // Act
+      var maybe2 = Maybe.bindMaybe(maybe)(returnM);
+
+      // Assert
+      expect(Maybe.isNothing(maybe2), true);
+    });
+
+    test('be nothing if bindMaybe operation produces null', () {
+      // Arrange
+      var value = 10;
+      var returnM = (item) => Maybe.from(null);
+      var maybe = Maybe.just(value);
+
+      // Act
+      var maybe2 = Maybe.bindMaybe(maybe)(returnM);
+
+      // Assert
+      expect(Maybe.isNothing(maybe2), true);
+    });
+
+    test('return mapped value from liftMaybe', () {
+      // Arrange
+      var value = 10;
+      var map = (item) => 'item: ${item * 4}';
+      var maybe = Maybe.just(value);
+
+      // Act
+      var maybe2 = Maybe.liftMaybe(maybe)(map);
+
+      // Assert
+      expect(Maybe.fromJust(maybe2), 'item: 40');
+    });
+
+    test('still be Nothing after liftMaybe to Nothing', () {
+      // Arrange
+      var value = null;
+      var map = (item) => 'item: ${item * 2}';
+      var maybe = Maybe.from(value);
+
+      // Act
+      var maybe2 = Maybe.liftMaybe(maybe)(map);
+
+      // Assert
+      expect(Maybe.isNothing(maybe2), true);
+    });
+
+    test('be nothing if liftMaybe operation produces null', () {
+      // Arrange
+      var value = 10;
+      var map = (item) => null;
+      var maybe = Maybe.just(value);
+
+      // Act
+      var maybe2 = Maybe.liftMaybe(maybe)(map);
+
+      // Assert
+      expect(Maybe.isNothing(maybe2), true);
+    });
+
+    test('trigger map once applied', () {
+      // Arrange
+      var value = 10;
+      var evaluated = false;
+      var map = (item) {
+        evaluated = true;
+        return 'item: $item';
+      };
+      var maybe = Maybe.just(value);
+
+      // Act
+      var maybe2 = Maybe.liftMaybe(maybe)(map);
+
+      // Assert
+      expect(evaluated, true);
+    });
+
+    test('trigger map only once, when value is realized', () {
+      // Arrange
+      var value = 10;
+      var evaluated = 0;
+      var map = (item) {
+        evaluated++;
+        return 'item: $item';
+      };
+      var maybe = Maybe.just(value);
+      var maybe2 = Maybe.liftMaybe(maybe)(map);
+
+      // Act
+      var result = Maybe.fromJust(maybe2);
+
+      // Assert
+      expect(evaluated, 1);
+    });
+
+    test('use a map and lift together across a list of Maybe', () {
+      // Arrange
+      Iterable<Maybe> maybes = [ Maybe.from(10), Maybe.from(20), Maybe.from(30) ];
+      var times2 = (_) => _ * 2;
+
+      // Act
+      var result = maybes.map((item) => item | times2);
+
+      // Assert
+      expect(result.length, 3);
+      expect(Maybe.fromJust(result.elementAt(0)), 20);
+      expect(Maybe.fromJust(result.elementAt(1)), 40);
+    });
+
+    test('map across the Monad collection and lift the provided function', () {
+      // Arrange
+      Iterable<Maybe> maybes = [ Maybe.from(10), Maybe.from(20), Maybe.from(30) ];
+      Func1<dynamic, dynamic> times2 = (_) => _ * 2;
+
+      // Act
+      var result = Maybe.liftMaybes(times2)(maybes);
+      //var result = Maybe.mapLiftMaybe(maybes)(times2);
+
+      // Assert
+      expect(result.length, 3);
+      expect(Maybe.fromJust(result.elementAt(0)), 20);
+      expect(Maybe.fromJust(result.elementAt(1)), 40);
+    });
+
+    /*test('map the provided values through the Maybe monad and cat the final results', () {
+      // Arrange
+      var values = [ 10, 20, 30, 40, 50, 60, 70, 80, 90, 100 ];
+      var toMaybe = (_) => Maybe.from(_);
+      var modThree = (_) => _ % 3;
+      var isEven = (_) => _ % 2 == 0;
+      var where = (predicate) => (_) => predicate(_) ? _ : null;
+      var lift = (f) => (maybe) => maybe | f;
+
+      // Act
+      var result = Maybe.catMaybes(values.map(toMaybe).map(lift(modThree)).map(lift(where(isEven))));
+
+      // Assert
+      expect(result.length, 6);
+      expect(result.elementAt(0), 2);
+      expect(result.elementAt(1), 0);
+      expect(result.elementAt(2), 2);
+      expect(result.elementAt(3), 0);
+    });*/
 
   }); // End Test Group
 }

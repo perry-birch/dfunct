@@ -1,92 +1,111 @@
 library typedefs;
 
+import 'typedefs_common.dart';
 import 'monad.dart';
 
-typedef R func<R>();
-typedef R map<T,R>(T value);
-typedef bool predicate<T>(T value);
 
-
-//typedef T M<T>();
-
-//typedef M<U> Lift<T, U>(M<T> from);
-
-//typedef R IO<R>();
-//typedef M<R> apply<T,R>(M<T> monad, map<T,R> map);
-//typedef M<R> fmap<T,R>(map<T,R> map, M<T> monad);
-
-
-// TODO: Extract typedefs to a seperate file
 /*
- * createM :: Monad m => () -> m dynamic
+ * CreaterM :: Monad m => () -> m dynamic
  * Creates a dynamic Monad from unit, aka factory
  */
-typedef M createM<M extends Monad>();
+typedef M Creator<M>();
+typedef M CreatorM<M extends Monad>();
 /*
- * createMT :: Monad m => () -> m T
+ * CreatorM(n) :: Monad m => dynamic -> m dynamic
+ * Creates a dynamic Monad from value(s)
+ */
+typedef M Creator1<M, T1>(T1 arg1);
+typedef M Creator2<M, T1, T2>(T1 arg1, T2 arg2);
+typedef M Creator3<M, T1, T2, T3>(T1 arg1, T2 arg2, T3 arg3);
+
+typedef M CreatorM1<M extends Monad, T1>(T1 arg1);
+typedef M CreatorM2<M extends Monad, T1, T2>(T1 arg1, T2 arg2);
+typedef M CreatorM3<M extends Monad, T1, T2, T3>(T1 arg1, T2 arg2, T3 arg3);
+/*
+ * CreatorMa :: Monad m => () -> m T
  * Creates a typed Monad from unit, aka factory
  */
-typedef MT createMT<MT extends Monad<T>, T>();
+typedef M CreatorMa<M extends Monad<Ma>, Ma>();
+typedef M WrapperMa<M extends Monad<Ma>, Ma>(Ma value);
 /*
- * returnM :: Monad m => dynamic -> m dynamic
- * Creates a dynamic Monad from dynamic value
+ * CreatorMa(n) :: Monad m => T -> m T
+ * Creates a typed Monad from value(s)
  */
-typedef M returnM<M extends Monad>(value);
-/*
- * returnMT :: Monad m => T -> m T
- * Creates a typed Monad from a typed value
- */
-typedef MT returnMT<MT extends Monad<T>, T>(T value);
-/*
- * returnMTR :: Monad m => T -> m R
- */
-typedef MR returnMTR<MR extends Monad<R>, T, R>(T value);
-/*
- * predicateM :: Monad m => m dynamic -> bool
- * Evaluates a predicate against a dynamic Monad
- */
-typedef bool predicateM<M extends Monad>(M target);
-/*
- * predicateMT :: Monad m => m T -> bool
- * Evaluates a predicate against a typed Monad
- */
-typedef bool predicateMT<M extends Monad<T>, T>(M target);
-/*
- * mapM :: Monad m => m dynamic -> m dynamic
- * Maps value from target Monad into result Monad
- */
-typedef M mapM<M extends Monad>(M target);
-// I want to do this (but can't) because it more accurately describes the map types and
-// guarantees like Monads on input and return:
-// typedef M<R> mapM<M extends Monad, T, R>(M<T> target);
-/*
- * mapMTR_M :: Monad m, m mT, m mR => mT dynamic -> mR dynamic
- * Maps value from target Monad into result Monad
- * ** Offers little (if any...) advantage beyond mapM
- */
-typedef MR mapMTR_M<M extends Monad, MT extends M, MR extends M>(MT target);
-/*
- * mapMTR_TR :: Monad mT, Monad mR => mT T -> mR R
- * Maps value from target Monad into result Monad
- * ** Doesn't guarantee use of matching Monad (i.e. Maybe -> Identity)
- */
-typedef MR mapMTR_TR<MT extends Monad<T>, T, MR extends Monad<R>, R>(MT target);
-/*
- * liftM :: Monad m => (T -> R) -> (m T -> m R)
- * Allows non Monadic map to act inside the Monad
- */
-typedef mapM<M> liftM<M extends Monad, T, R>(map<T, R> liftee);
-// TODO: Extend this for the more specific mapMTR... variants?
+typedef M CreatorMa1<M extends Monad<Ma>, Ma, T1>(T1 arg1);
+typedef M CreatorMa2<M extends Monad<Ma>, Ma, T1, T2>(T1 arg1, T2 arg2);
+typedef M CreatorMa3<M extends Monad<Ma>, Ma, T1, T2, T3>(T1 arg1, T2 arg2, T3 arg3);
 
-typedef R extractorM<M extends Monad<R>, R>(M target);
-typedef R extractorMapM<M extends Monad<T>, T, R>(map<T, R> map, M target);
+typedef MOut ConverterM<M extends Monad, MIn extends M, MOut extends M>(MIn source);
+typedef MaOut ConverterMa<M extends Monad<Ma>, Ma, MaIn extends M, MaOut extends M>(MaIn source);
 
-typedef R extractorDefM<M extends Monad<R>, R>(R def, M target);
-typedef R extractorMapDefM<M extends Monad<T>, T, R>(R def, map<T, R> map, M target);
+/*
+ * LifterM :: Monad m => (T -> R) -> (m T -> m R)
+ * Allows a Func1 to act inside the Monad
+ */
+typedef Func1<T, R> TargeterLifter<M, T, R>(M target);
+typedef Func1<T, R> TargeterMLifterM<M extends Monad, T, R>(M target);
 
-typedef Iterable<R> iterableExtractorM<M extends Monad<R>, R>(Iterable<M> source);
+typedef M Lifter<M, T, R>(Func1<T, R> liftee);
+typedef M LifterM<M extends Monad, T, R>(Func1<T, R> liftee);
 
-typedef R liftExtractorM<M extends Monad<R>, T, R>(returnMTR<M, T, R> returnM, Iterable<T> source);
+typedef Iterable<M> Mapper<M, T>(Iterable<T> source);
+typedef Iterable<M> MapperM<M extends Monad, Ma, T>(Iterable<T> source);
 
+typedef Mapper<M, R> LifterMapper<M, T, R>(Func1<T, R> liftee);//Iterable<M> source);//, Func1<T, R> liftee);
+typedef MapperM<M, T, R> LifterMMapperM<M extends Monad, T, R>(Func1<T, R> liftee);//Iterable<M> source);//, Func1<T, R> liftee);
+
+typedef Lifter<M, T, R> DefLifter<M, T, R>(R def);
+typedef LifterM<M, T, R> DefLifterM<M extends Monad, T, R>(R def);
+
+typedef LifterMapper<M, T, R> DefLifterMapper<M, T, R>(R def);
+typedef LifterMMapperM<M, T, R> DefLifterMapperM<M extends Monad, T, R>(R def);
+
+typedef dynamic Extractor<M>(M target);
+typedef dynamic ExtractorM<M extends Monad>(M target);
+
+typedef Iterable<dynamic> MapperExtractor<M>(Iterable<M> source);
+typedef Iterable<dynamic> MapperMExtractorM<M extends Monad>(Iterable<M> source);
+
+typedef Extractor<M> DefExtractor<M>(dynamic def);
+typedef ExtractorM<M> DefExtractorM<M extends Monad>(dynamic def);
+
+typedef MapperExtractor<M> DefMapperExtractor<M>(dynamic def);
+typedef MapperMExtractorM<M> DefMapperExtractorM<M extends Monad>(dynamic def);
+
+typedef Extractor<M> LifterExtractor<M, T, R>(Func1<T, R> liftee);
+typedef ExtractorM<M> LifterMExtractorM<M extends Monad, T, R>(Func1<T, R> liftee);
+
+typedef Extractor<M> Creator1Extractor<M, T1>(Creator1<M, T1> creator);
+typedef ExtractorM<M> CreatorMa1ExtractorM<M extends Monad, Ma, T1>(CreatorMa1<M, Ma, T1> creator);
+
+typedef MapperExtractorT<M, Ma> Creator1MapperExtractorT<M, Ma, T1>(Creator1<M, T1> creator);
+typedef MapperMExtractorMT<M, Ma> CreatorMa1MapperMExtractorMT<M extends Monad, Ma, T1>(CreatorMa1<M, Ma, T1> creator);
+
+typedef LifterExtractor DefLifterExtractor<M, T, R>(dynamic def);
+typedef LifterMExtractorM DefLifterExtractorM<M extends Monad, T, R>(dynamic def);
+
+//typedef dynamic ExtractorMDef<M extends Monad>(dynamic def, M target);
+//typedef Iterable<dynamic> MapExtractorMDef<M extends Monad>(dynamic def, Iterable<M> source);
+
+typedef T ExtractorT<M, T>(M target);
+typedef T ExtractorMT<M extends Monad, T>(M target);
+
+typedef Iterable<T> MapperExtractorT<M, T>(Iterable<M> source);
+typedef Iterable<T> MapperMExtractorMT<M extends Monad, T>(Iterable<M> source);
+
+typedef ExtractorT<M, T> DefExtractorT<M, T>(T def);
+typedef MapperExtractorT<M, T> DefMapperExtractorT<M, T>(T def);
+
+//typedef Ma ExtractorMa<M extends Monad<Ma>, Ma>(M target);
+//typedef Iterable<Ma> MapperMExtractorMa<M extends Monad<Ma>, Ma>(Iterable<M> source);
+
+//typedef Ma ExtractorMaDef<M extends Monad<Ma>, Ma>(Ma def, M target);
+//typedef Iterable<Ma> MapperMExtractorMa<M extends Monad<Ma>, Ma>(Ma def, Iterable<M> source);
+
+typedef Creator1<M, Ma> TargeterBinder<M, Ma>(M target);
+typedef CreatorMa1<M, Mb, Ma> TargeterMBinderM<M extends Monad, Ma, Mb>(M target);
+
+typedef M Binder<M, Ma>(M target, Creator1<M, Ma> creator);
+typedef Monad BinderM<M extends Monad, Ma, Mb>(M target, CreatorMa1<M, Mb, Ma> creator);
 //typedef M bindM<M extends Monad<T>, T, MR extends Monad<R>, R>(M target, mapM<T, MR> map);
-typedef MR binderM<MT extends Monad<T>, T, MR extends Monad<R>, R>(MT target, returnMTR<MR, T, R> returnM);
+//typedef MR binderM<MT extends Monad<T>, T, MR extends Monad<R>, R>(MT target, returnMTR<MR, T, R> returnM);
