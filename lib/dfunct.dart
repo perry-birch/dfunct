@@ -1,14 +1,12 @@
 library dfunct;
 
-import 'src/monad.dart';
-import 'src/maybe.dart';
-import 'src/typedefs_common.dart';
-import 'src/typedefs.dart';
+import 'src/monads_lib.dart';
+import 'src/typedefs_lib.dart';
+import 'src/utils_lib.dart';
 
-export 'src/monad.dart';
-export 'src/maybe.dart';
-export 'src/typedefs_common.dart';
-export 'src/typedefs.dart';
+export 'src/monads_lib.dart';
+export 'src/typedefs_lib.dart';
+export 'src/utils_lib.dart';
 
 void main() {
 }

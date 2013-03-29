@@ -2,3 +2,4 @@
 .buildlog
 .DS_Store
 packages
+*.prefs

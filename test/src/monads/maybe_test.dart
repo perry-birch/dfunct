@@ -6,11 +6,11 @@ maybe_tests() {
     test('call bindMaybe with current instance when bind is called', () {
       // Arrange
       var value = 10;
-      var returnM = (item) => Maybe.just('item: ${item * 2}');
+      var binder = (item) => Maybe.just('item: ${item * 2}');
       var maybe = Maybe.just(value);
 
       // Act
-      var maybe2 = maybe.bind(returnM);
+      var maybe2 = maybe.bind(binder);
 
       // Assert
       expect(Maybe.fromJust(maybe2), 'item: 20');
@@ -23,7 +23,7 @@ maybe_tests() {
       var maybe = Maybe.just(value);
 
       // Act
-      var maybe2 = maybe.lift(map);
+      var maybe2 = maybe.map(map);
       var actual = Maybe.fromJust(maybe2);
 
       // Assert
@@ -328,13 +328,13 @@ maybe_tests() {
     test('return an empty list for mapMaybe with all Nothing source result', () {
       // Arrange
       var source = [1, 2, 3];
-      var returnM = (a) {
+      var creator = (a) {
         if(a < 10) { return Maybe.nothing(); }
         else { return Maybe.just(a); }
       };
 
       // Act
-      var actual = Maybe.mapMaybe(returnM)(source);
+      var actual = Maybe.mapReduceMaybe(creator)(source);
 
       // Assert
       expect(actual.length, 0);
@@ -343,13 +343,13 @@ maybe_tests() {
     test('return a list with Nothings removed for mapMaybe with a mixed source', () {
       // Arrange
       var source = [1, 2, 3, 11, 12, 13];
-      var returnM = (a) {
+      var creator = (a) {
         if(a < 10) { return Maybe.nothing(); }
         else { return Maybe.just('value: ${a}'); }
       };
 
       // Act
-      var actual = Maybe.mapMaybe(returnM)(source);
+      var actual = Maybe.mapReduceMaybe(creator)(source);
 
       // Assert
       expect(actual.length, 3);
@@ -404,7 +404,7 @@ maybe_tests() {
       var maybe = Maybe.just(value);
 
       // Act
-      var maybe2 = Maybe.liftMaybe(maybe)(map);
+      var maybe2 = Maybe.mapMaybe(maybe)(map);
 
       // Assert
       expect(Maybe.fromJust(maybe2), 'item: 40');
@@ -417,7 +417,7 @@ maybe_tests() {
       var maybe = Maybe.from(value);
 
       // Act
-      var maybe2 = Maybe.liftMaybe(maybe)(map);
+      var maybe2 = Maybe.mapMaybe(maybe)(map);
 
       // Assert
       expect(Maybe.isNothing(maybe2), true);
@@ -430,7 +430,7 @@ maybe_tests() {
       var maybe = Maybe.just(value);
 
       // Act
-      var maybe2 = Maybe.liftMaybe(maybe)(map);
+      var maybe2 = Maybe.mapMaybe(maybe)(map);
 
       // Assert
       expect(Maybe.isNothing(maybe2), true);
@@ -447,7 +447,7 @@ maybe_tests() {
       var maybe = Maybe.just(value);
 
       // Act
-      var maybe2 = Maybe.liftMaybe(maybe)(map);
+      var maybe2 = Maybe.mapMaybe(maybe)(map);
 
       // Assert
       expect(evaluated, true);
@@ -462,7 +462,7 @@ maybe_tests() {
         return 'item: $item';
       };
       var maybe = Maybe.just(value);
-      var maybe2 = Maybe.liftMaybe(maybe)(map);
+      var maybe2 = Maybe.mapMaybe(maybe)(map);
 
       // Act
       var result = Maybe.fromJust(maybe2);
@@ -491,7 +491,8 @@ maybe_tests() {
       Func1<dynamic, dynamic> times2 = (_) => _ * 2;
 
       // Act
-      var result = Maybe.liftMaybes(times2)(maybes);
+      var result = maybes.map((item) => item.map(times2));
+      //var result = Maybe.liftMaybes(times2)(maybes);
       //var result = Maybe.mapLiftMaybe(maybes)(times2);
 
       // Assert

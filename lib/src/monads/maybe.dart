@@ -1,54 +1,53 @@
 // http://www.haskell.org/ghc/docs/latest/html/libraries/base/Data-Maybe.html#t:Maybe
 library maybe;
 
-import 'typedefs.dart';
-import 'typedefs_common.dart';
+import '../typedefs/common.dart';
 import 'monad.dart';
 
-class Maybe<T> implements Monad {
+class Maybe<T> implements Monad<T> {
   final T _value;
   const Maybe._internal(this._value);
 
   /*
    * The bind method takes a CreaterMa1 (a -> m b) map and calls bindMaybe with this instance.
    */
-  Maybe bind(CreatorMa1<Maybe, dynamic, dynamic> creator) {
+  Maybe bind(Creator1<Maybe, dynamic> creator) {
     return Maybe.bindMaybe(this)(creator);
   }
 
   /*
    * The lift method takes a Func1 (a -> b) and calls liftMaybe with this instance.
    */
-  Maybe lift(Func1<dynamic, dynamic> liftee) {
-    return Maybe.liftMaybe(this)(liftee);
+  Maybe map(Func1<T, dynamic> mapper) {
+    return Maybe.mapMaybe(this)(mapper);
   }
 
   /*
-   * The >> operator takes a CreatorMa1 (a -> m b) map and calls bind on this instance.
+   * The >> operator takes a Creator1 (a -> m b) map and calls bind on this instance.
    */
-  Maybe operator >>(CreatorMa1<Maybe, dynamic, dynamic> creator) {
+  Maybe operator >>(Creator1<Maybe, dynamic> creator) {
     return bind(creator);
   }
 
   /*
    * The | operator takes a Func1 (a -> b) and calls lift on this instance.
    */
-  Maybe operator |(Func1<dynamic, dynamic> liftee) {
-    return lift(liftee);
+  Maybe operator |(Func1<T, dynamic> mapper) {
+    return map(mapper);
   }
 
   /*
    * Constructs a new Maybe based on the value given.
    * Will eval as nothing if null is passed.
    */
-  static final WrapperMa<Maybe, dynamic> from = (dynamic value) {
+  static final Creator1<Maybe, dynamic> from = (dynamic value) {
     return new Maybe._internal(value);
   };
 
   /*
    * Constructs a new Maybe with state Nothing.
    */
-  static final CreatorM<Maybe> nothing = () {
+  static final Creator<Maybe> nothing = () {
     return from(null);
   };
 
@@ -57,7 +56,7 @@ class Maybe<T> implements Monad {
    * Implies an assertion that the value will not be null.
    * Throws exception if value is null.
    */
-  static final WrapperMa<Maybe, dynamic> just = (dynamic value) {
+  static final Creator1<Maybe, dynamic> just = (dynamic value) {
     if(value == null) { throw new StateError('Cannot construct ''Maybe.just'' from a null value'); }
     return from(value);
   };
@@ -81,7 +80,7 @@ class Maybe<T> implements Monad {
    * if it's a Nothing.
    * ** Note: Strongly advised to use fromMaybe as throwing is typically bad.
    */
-  static final ExtractorM<Maybe> fromJust = (Maybe target) {
+  static final Extractor<Maybe, dynamic> fromJust = (Maybe target) {
     if(isNothing(target)) { throw new StateError('Cannot extract value from Nothing using fromJust'); }
     return target._value;
   };
@@ -91,8 +90,7 @@ class Maybe<T> implements Monad {
    * Nothing, it returns teh default value; otherwise, it returns the value contained
    * in the Maybe's Just.
    */
-  //static final DefExtractorM<Maybe> fromMaybe = (dynamic def) {
-  static final DefExtractor<Maybe> fromMaybe = (dynamic def) {
+  static final DefExtractor<Maybe, dynamic> fromMaybe = (dynamic def) {
     return (Maybe target) {
       if(isNothing(target)) { return def; }
       return target._value;
@@ -104,12 +102,11 @@ class Maybe<T> implements Monad {
    * If the Maybe value is Nothing, the function returns the default value.  Otherwise,
    * it applies the function to the value inside the Just and returns the result.
    */
-  //static final DefLifterExtractorM<Maybe, dynamic, dynamic> maybe = (dynamic def) {
   static final DefLifterExtractor maybe = (dynamic def) {
-    return (Func1<dynamic, dynamic> liftee) {
+    return (Func1<dynamic, dynamic> map) {
       return (Maybe target) {
         if(isNothing(target)) { return def; }
-        return liftee(target._value);
+        return map(target._value);
       };
     };
   };
@@ -118,7 +115,7 @@ class Maybe<T> implements Monad {
    * The listToMaybe function returns Nothing on an empty list or Just a where a is
    * the first element of the list.
    */
-  static final CreatorM1<Maybe, Iterable> listToMaybe = (Iterable source) {
+  static final Creator1<Maybe, Iterable> listToMaybe = (Iterable source) {
     if(source == null || source.length == 0) { return nothing(); }
     return just(source.elementAt(0));
   };
@@ -127,7 +124,7 @@ class Maybe<T> implements Monad {
    * The maybeToList function returns an empty list when given Nothing or a singleton list
    * when not given Nothing.
    */
-  static final ExtractorMT<Maybe, List> maybeToList = (Maybe target) {
+  static final Extractor<Maybe, List> maybeToList = (Maybe target) {
     if(isNothing(target)) { return new List(); }
     return [target._value];
   };
@@ -135,20 +132,32 @@ class Maybe<T> implements Monad {
   /*
    * The catMaybes function takes a list of Maybes and returns a list of all the Just values.
    */
-  //static final MapperMExtractorMT<Maybe, dynamic> catMaybes = (Iterable<Maybe> source) {
   static final MapperExtractorT<Maybe, dynamic> catMaybes = (Iterable<Maybe> source) {
     return source.where(isJust).map(fromJust);
   };
 
   /*
-   * The mapMaybe function is a version of map which can throw out elements.  In particular
+   * The mapMaybe function creates a lazy eval Maybe which will apply the provided map to the
+   * value whenever it is realized.
+   */
+  // TODO: this signature should flip target and mapper positions to be consistent?
+  static final TargeterMapper<Maybe, dynamic, dynamic> mapMaybe = (Maybe target) {
+    return (Func1<dynamic, dynamic> mapper) {
+      if(isNothing(target)) { return nothing(); }
+      return new Maybe._internal(mapper(target._value));
+    };
+  };
+
+  /*
+   * The mapReduceMaybe function is a version of map which can throw out elements.  In particular
    * the functional argument returns something of type Maybe b.  If this is Nothing, no
    * element is added on to the result list.  If it is Just b then b is included.
    */
-  //static final CreatorMa1MapperMExtractorMT<Maybe, dynamic, dynamic> mapMaybe = (CreatorMa1<Maybe, dynamic, dynamic> creator) {
-  static final Creator1MapperExtractorT<Maybe, dynamic, dynamic> mapMaybe = (Creator1<Maybe, dynamic> creator) {
+  static final Creator1MapperExtractorT<Maybe, dynamic, dynamic> mapReduceMaybe = (Creator1<Maybe, dynamic> creator) {
     return (Iterable<dynamic> source) {
-      return source.map(creator).where(isJust).map(fromJust);
+      return source.map(creator) // Map into the monad
+          .where(isJust) // Reduce the Nothings
+          .map(fromJust); // Extract the results
     };
   };
 
@@ -156,35 +165,26 @@ class Maybe<T> implements Monad {
    * The bindMaybe function extracts the current value and applies a transform map using
    * the provided returnM.
    */
-  static final TargeterBinder<Maybe, dynamic> bindMaybe = (Maybe target) {
+  static final TargeterBinder<Maybe, dynamic, dynamic> bindMaybe = (Maybe target) {
     return (Creator1<Maybe, dynamic> creator) {
       if(isNothing(target)) { return nothing(); }
       return creator(target._value);
     };
   };
 
-  /*
-   * The liftMaybe function creates a lazy eval Maybe which will apply the provided map to the
-   * value whenever it is realized.
-   */
-  static final TargeterLifter<Maybe, dynamic, dynamic> liftMaybe = (Maybe target) {
-    return (Func1<dynamic, dynamic> liftee) {
-      if(isNothing(target)) { return nothing(); }
-      return new Maybe._internal(liftee(target._value));
-    };
-  };
 
+  // This doesn't belong in Maybe<T> but instead in a List<Maybe<T>>...?
   /*
    * The mapLiftMaybe function creates a lazy eval Maybe collecion which will apply the provided
    * map to the value whenver any are realized.
    */
   //static final MapperLifter<Maybe, dynamic, dynamic> mapLiftMaybe = (Iterable<Maybe> source) {
-  static final LifterMapper liftMaybes = (Func1 liftee) {
+  /*static final LifterMapper liftMaybes = (Func1 liftee) {
     return (Iterable<Maybe> source) {
       return source.map((target) {
         if(isNothing(target)) { return nothing(); }
         return new Maybe._internal(liftee(target._value));
       });
     };
-  };
+  };*/
 }

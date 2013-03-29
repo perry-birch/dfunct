@@ -1,3 +1,9 @@
+* 0.0.6 *
+- Major refactoring to Maybe monad, trying to embrace currying and type-safety (in checked at least)
+- Added a ton of structure to common typedefs, starting to use them in other libraries myself which is encouraging
+- Added Functor class under Monad (which should have been this way in Haskell aparantly so we can do it right from the outset!)
+- Broke the Dart VM (but it's fixed now): http://stackoverflow.com/questions/15614472/unit-test-hanging-when-using-lexical-scoping-and-generics-with-extends
+
 * 0.0.5 *
 - Refactored Maybe monad (added currying to most (all?) multi param calls)
 - Cleaned up and organized typedefs

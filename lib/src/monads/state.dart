@@ -1,6 +1,6 @@
 library state;
 
-import 'monad.dart';
+import 'package:dfunct/dfunct.dart';
 
 // http://igstan.ro/posts/2011-05-02-understanding-monads-with-javascript.html
 // http://bartoszmilewski.com/2011/03/17/monads-for-the-curious-programmer-part-3/
