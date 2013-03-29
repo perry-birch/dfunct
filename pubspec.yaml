@@ -7,6 +7,7 @@ description: |-
 homepage: https://github.com/Vizidrix/dfunct
 documentation: https://github.com/Vizidrix/dfunct/tree/master/doc
 dependencies:
+  meta: '>=0.4.1'
+dev_dependencies:
   unittest: '>=0.4.1'
   benchmark_harness: any
-  meta: '>=0.4.1'
