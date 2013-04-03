@@ -55,7 +55,7 @@ typedef void Action2<T1, T2>(T1 arg1, T2 arg2);
 typedef void Action3<T1, T2, T3>(T1 arg1, T2 arg2, T3 arg3);
 typedef void Action4<T1, T2, T3, T4>(T1 arg1, T2 arg2, T3 arg3, T4 arg4);
 typedef void Action5<T1, T2, T3, T4, T5>(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5);
-typedef void Action5<T1, T2, T3, T4, T5, T6>(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6);
+typedef void Action6<T1, T2, T3, T4, T5, T6>(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6);
 
 // Same signature as Func but implies a factory as opposed to an operation
 typedef M Creator<M>();
