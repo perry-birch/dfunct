@@ -1,6 +1,8 @@
+* 0.0.8 *
+- Fixed signature of new << operator and added a couple of tests on it
+
 * 0.0.7 *
 - Added << operator to Maybe monad to support value extraction
-+1 Fixed signature of new << operator and added a couple of tests on it
 
 * 0.0.6 *
 - Major refactoring to Maybe monad, trying to embrace currying and type-safety (in checked at least)
