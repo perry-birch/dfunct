@@ -1,3 +1,6 @@
+* 0.0.7 *
+- Added << operator to Maybe monad to support value extraction
+
 * 0.0.6 *
 - Major refactoring to Maybe monad, trying to embrace currying and type-safety (in checked at least)
 - Added a ton of structure to common typedefs, starting to use them in other libraries myself which is encouraging

@@ -30,6 +30,13 @@ class Maybe<T> implements Monad<T> {
   }
 
   /*
+   * The << operator attempts to extract the value from Maybe using the same rules as fromMaybe
+   */
+  Maybe operator <<(dynamic def) {
+    return fromMaybe(def)(this);
+  }
+
+  /*
    * The | operator takes a Func1 (a -> b) and calls lift on this instance.
    */
   Maybe operator |(Func1<T, dynamic> mapper) {

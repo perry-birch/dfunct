@@ -15,8 +15,9 @@ There are usage examples in the test folder for sections that are fleshed out mo
 
 - bind(Creator1<Maybe, dynamic> creator)
 - map(Func1<T, dynamic> mapper)
-- Operator: >> :: bind
-- Operator: | :: map
+- Operator: >>			:: (Creator1<Maybe, dynamic> creator) [aka bind]
+- Operator: <<			:: (dynamic def) [aka fromMaybe]
+- Operator: |			:: (Func1<T, dynamic> mapper) [aka map]
 
 * Static *
 

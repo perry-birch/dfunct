@@ -1,4 +1,4 @@
-library typedefs;
+library typedefs_monadic;
 
 import '../monads_lib.dart';
 
