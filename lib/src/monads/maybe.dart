@@ -32,7 +32,7 @@ class Maybe<T> implements Monad<T> {
   /*
    * The << operator attempts to extract the value from Maybe using the same rules as fromMaybe
    */
-  Maybe operator <<(dynamic def) {
+  dynamic operator <<(dynamic def) {
     return fromMaybe(def)(this);
   }
 

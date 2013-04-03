@@ -43,6 +43,33 @@ maybe_tests() {
       expect(Maybe.fromJust(maybe2), 30);
     });
 
+    test('associate fromMaybe to << operator', () {
+      // Arrange
+      var value = 10;
+      var maybe = Maybe.just(value);
+      var def = 20;
+
+      // Act
+      //var result = Maybe.fromMaybe(def)(maybe);
+      var result = maybe << def;
+
+      // Assert
+      expect(result, value);
+    });
+
+    test('associate fromMaybe with default to << operator', () {
+      // Arrange
+      var value = null;
+      var maybe = Maybe.from(value);
+      var def = 20;
+
+      // Act
+      var result = maybe << def;
+
+      // Assert
+      expect(result, def);
+    });
+
     test('associate lift to | operator', () {
       // Arrange
       var value = 10;

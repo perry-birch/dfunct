@@ -1,5 +1,5 @@
 name: dfunct
-version: 0.0.7
+version: 0.0.7+1
 author: Vizidrix <admin@vizidrix.com>
 description: |-
   A functional library for Dart inspired by Haskell.
